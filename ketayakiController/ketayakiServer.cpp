@@ -24,6 +24,7 @@ void ketayakiServer::handleRoot () {
   if (server.method() == HTTP_POST) {
     String mode_str = server.arg("mode");
     //Serial.println(mode_str);
+    //ここでmodeを更新
     if (mode_str == "standby") {
       mode = 0;    
     }

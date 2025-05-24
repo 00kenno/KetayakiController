@@ -18,7 +18,7 @@ class ketayakiServer {
     static void getData();
     void loop();
     void setup();
-    static char ketayaki_status[32];
+    static char ketayaki_status[32]; // ←これのことね static指定はいらない気がするけど触りたくない
     static int target_temp, mode;
 };
 

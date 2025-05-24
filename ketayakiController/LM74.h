@@ -1,3 +1,5 @@
+// 消してしまえ
+
 #ifndef LM74_H
 #define LM74_H
 

@@ -1,3 +1,5 @@
+// 消してしまえ
+
 #include <Arduino.h>
 #include "LM74.h"
 
