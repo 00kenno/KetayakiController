@@ -1,0 +1,279 @@
+
+
+
+<!DOCTYPE html>
+<html lang='ja'>
+  <head>
+    <meta charset='utf-8' />
+      <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+      <meta name='viewport' content='width=device-width,initial-scale=1' />
+      <title>Ketayaki Manegement Portal</title>
+      <meta name='description' content='接続の上限は4台です' />
+  </head>
+  <style>
+    body {
+      font-family: arial;
+    }
+    h1 {
+      margin: 10px 0;
+      font-size: 30px;
+      text-align: center;
+    }
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      text-align: left;
+      border-bottom: solid 1px black;
+    }
+    p {
+      margin: 1em 0;
+      font-size: 20px;
+      text-align: right;
+    }
+    table {
+      width: 100%;
+      margin: 0;
+      border-collapse: collapse;
+      border: solid 1px black;
+      border-radius: 5px;
+    }
+    table th {
+      width: 50%;
+      margin: 0;
+      font-size: 15px;
+      text-align: left;
+      border: dashed 1px black;
+    }
+    table td {
+      width: 50%;
+      margin: 0;
+      font-size: 20px;
+      text-align: right;
+      border: dashed 1px black;
+    }
+    span {
+      margin: 0;
+      font-size: 20px;
+      text-align: right;
+    }
+    .parent {
+      margin: 0 auto;
+      max-width: 550px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .block {
+      width: 200px;
+      margin: 5px 5px;
+      padding: 10px;
+      outline: 2px solid;
+      border-radius: 20px;
+    }
+    .val {
+      width: 90%;
+      margin: 10px auto;
+    }
+    .fig {
+      width: 140px;
+      height: 140px;
+      margin: 10px auto;
+    }
+    label {
+      margin: 0.3em;
+      font-size: 15px;
+    }
+    .radio_item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: left;
+    }
+    .radio_inner {
+      margin: 0;
+      font-size: 12px;
+      text-align: left;
+    }
+    .number_input {
+      margin: 10px 0;
+      width: 100%;
+    }
+    button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 0.3em;
+    }
+  </style>
+  <body>
+    <h1>Ketayaki Manegement Portal</h1>
+    <div class='parent'>
+      <div class='block'>
+        <div class='val'>
+          <h2>実行モード</h2>
+          <p>《<span id='mode'>待機中</span>》</p>
+          <h2>桁焼きの経過時間</h2>
+          <p><span id='time'></span>秒</p>
+          <table>
+            <tr>
+              <th>現在温度</th><th>目標温度</th>
+            </tr>
+            <tr>
+              <td><span id='current_temp'></span>℃</td><td><span id='target_temp'>130</span>℃</td>
+            </tr>
+          </table>
+        </div>
+        <div class='fig'>
+          <svg version='1.1' width='140' height='140' viewBox='-70 -70 140 140' xmlns='http://www.w3.org/2000/svg'>
+            <circle class='frame' cx='0' cy='0' r='68' fill='transparent' stroke='black' stroke-width='3' />
+            <path class='dial' d='M 0 -68 V -45 M 68 0 H 45 M 0 68 V 45 M -68 0 H -45' fill='tarnsparent' stroke='black' stroke-width='5' />
+            <path class='arrow' id='windDirectionSvg' d='M 0 -60 L 30 -10 H 10 V 60 H -10 V -10 H -30 Z' fill='skyblue' stroke='black' stroke-width='1' />
+          </svg>
+        </div>
+      </div>
+      <div class='block'>
+        <div class='val'>
+          <h2>桁焼き設定の変更</h2>
+          <form action='' method='post'>
+            <div class='radio_item'>
+              <input type='radio' name='mode' value='standby' onclick='radio_inner_func()' checked>
+              <label>桁焼きの停止</label>
+            </div>
+            <div class='radio_item'>
+              <input type='radio' name='mode' value='thermostat' onclick='radio_inner_func()'>
+              <label>サーモスタット</label>
+            </div>
+            <div class='radio_item'>
+              <input type='radio' name='mode' value='const_rate_heating' onclick='radio_inner_func()'>
+              <label>定速加熱</label>
+            </div>
+            <p class='radio_inner' id='standby_inner'>加熱を停止し，待機状態に移行します．</p>
+            <p class='radio_inner' id='thermostat_inner'>設定された目標温度に保つよう動作します．</p>
+            <p class='radio_inner' id='const_rate_heating_inner'>1分に1℃上昇するように加熱します．目標温度に到達後，自動的にサーモスタットモードに切り替わります．</p>
+            <div class='number_input'>
+              <input style='width: 100%; padding: 0.3em;' type='number' name='target_temp' id='target_temp_input' placeholder='目標温度を入力'>
+            </div>
+            <button type='submit'>適用</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type='text/javascript'>
+    function radio_inner_func() {
+      const mode = document.getElementsByName('mode');
+      if (mode[0].checked) {
+        document.getElementById('standby_inner').style.display = '';
+        document.getElementById('thermostat_inner').style.display = 'none';
+        document.getElementById('const_rate_heating_inner').style.display = 'none';
+        document.getElementById('target_temp_input').style.display = 'none';
+        console.log('standby');
+      }
+      else if (mode[1].checked) {
+        document.getElementById('standby_inner').style.display = 'none';
+        document.getElementById('thermostat_inner').style.display = '';
+        document.getElementById('const_rate_heating_inner').style.display = 'none';
+        document.getElementById('target_temp_input').style.display = '';
+        console.log('thermostat');
+      }
+      else if (mode[2].checked) {
+        document.getElementById('standby_inner').style.display = 'none';
+        document.getElementById('thermostat_inner').style.display = 'none';
+        document.getElementById('const_rate_heating_inner').style.display = '';
+        document.getElementById('target_temp_input').style.display = '';
+        console.log('const_rate_heating');
+      }
+    }
+    window.addEventListener('load', radio_inner_func());
+
+    function updateData() {
+      const getData = fetch('/get/data')
+        .then((response) => response.text())
+        .then((data) => {
+          const datum = data.split(',');
+
+          console.log('time: ',datum[0]);
+          console.log('mode: ',datum[1])
+          console.log('current_temp: ',datum[2]);
+          console.log('target_temp: ',datum[3]);
+
+          const time = document.getElementById('time');
+          time.textContent = datum[0];
+
+          let changeText = '待機中'; <!--datum[1] == '0'で待機中-->
+          const mode = document.getElementById('mode');
+          if (datum[1] == '1') {
+            changeText = 'サーモスタット';
+          }
+          else if (datum[1] == '2') {
+            changeText = '定速加熱';
+          }
+          mode.textContent = changeText;
+
+          const current_temp = document.getElementById('current_temp');
+          current_temp.textContent = datum[2];
+          const windDirectionDeg = Math.trunc(datum[2]);
+          const windDirectionSvg = document.getElementById('windDirectionSvg');
+          windDirectionSvg.setAttribute('transform', 'rotate('+windDirectionDeg+', 0, 0)');
+          const target_temp = document.getElementById('target_temp');
+          target_temp.textContent = datum[3];
+        })
+        .then(() => {
+          setTimeout(() => {
+            updateData();
+          }, 100);
+        })
+        .catch(() => {
+          console.error('Rejected getData');
+          setTimeout(() => {
+            updateData();
+          }, 1000);
+        });
+    }
+
+    let windDirectionAngle = 0;
+    function dummy() {
+      setTimeout(() => {
+        if(windDirectionAngle < Math.PI*2) {
+          windDirectionAngle += Math.PI/200;
+        }
+        else {
+          windDirectionAngle = 0;
+        }
+        const windDirectionDeg = windDirectionAngle/Math.PI*180;
+        const current_temp = document.getElementById('current_temp');
+        current_temp.textContent = Math.trunc(windDirectionDeg);
+        const windDirectionSvg = document.getElementById('windDirectionSvg');
+        windDirectionSvg.setAttribute('transform', 'rotate('+windDirectionDeg+', 0, 0)');
+        const time = document.getElementById('time');
+        time.textContent = Math.trunc(20+7*Math.sin(windDirectionAngle));
+        const target_temp = document.getElementById('target_temp');
+        target_temp.textContent = Math.trunc(1012+20*Math.cos(windDirectionAngle));
+        let mode_num;
+        if (0 < windDirectionDeg && windDirectionDeg < 180) {
+          mode_num = 0;
+        }
+        else {
+          mode_num = 1;
+        }
+        let changeText = '待機中';
+        const mode = document.getElementById('mode');
+        if (mode_num == 0) {
+          changeText = 'サーモスタット';
+        }
+        else if (mode_num == 1) {
+          changeText = '定速加熱';
+        }
+        mode.textContent = changeText;
+        dummy();
+      }, 10);
+    }
+
+
+
+    setTimeout(dummy,10);
+  </script>
+</html>
+
+
+
